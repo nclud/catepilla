@@ -10,6 +10,7 @@ var document = window.document;
 var Modernizr = window.Modernizr;
 // get convienent vars
 var transformProp = Modernizr.prefixed('transform');
+var delayProp = Modernizr.prefixed('transitionDelay')
 
 var positionElem = Modernizr.csstransforms3d ? function( elem, x, y ) {
     elem.style[ transformProp ] = 'translate3d(' + x + 'px, ' + y + 'px, 0)';
@@ -49,7 +50,8 @@ function Catepilla( elem, options ) {
 
 Catepilla.defaults = {
   segmentCount: 5,
-  segmentHeight: 0.55
+  segmentHeight: 0.55,
+  perSegmentDelay: 0.05
 };
 
 Catepilla.prototype.create = function() {
@@ -83,12 +85,14 @@ Catepilla.prototype._createSegments = function() {
 
   var segment;
   var frag = document.createDocumentFragment();
+  var theta = Math.floor( Math.random() * 2 ) * Math.PI;
   for ( var i=0; i < segmentCount; i++ ) {
     segment = new CatepillaSegment({
       parent: this,
       width: this.segmentWidth,
       index: i,
-      imgWidth: this.width
+      imgWidth: this.width,
+      y: ( Math.sin( i * Math.PI / 2 + theta ) * 0.5 + 0.5 ) * this.height * ( 1 - this.options.segmentHeight )
     });
     frag.appendChild( segment.elem );
     this.segments.push( segment );
@@ -135,11 +139,13 @@ function CatepillaSegment( props ) {
     this[ prop ] = props[ prop ];
   }
 
+  var opts = this.parent.options;
+
   this.elem = document.createElement('div');
   this.elem.className = 'segment';
   this.elem.style.width = this.width + 'px';
-  var segmentHeight = this.parent.options.segmentHeight;
-  this.elem.style.height = ( 100 * segmentHeight ) + '%';
+  this.elem.style.height = ( 100 * opts.segmentHeight ) + '%';
+  this.elem.style[ delayProp ] = ( opts.perSegmentDelay * this.index ) + 's';
   // this.elem.style.opacity = 0;
 
   this.img = new Image();
@@ -151,7 +157,6 @@ function CatepillaSegment( props ) {
   
   this.img.width = this.imgWidth;
 
-  this.y = Math.random() * this.parent.height * ( 1 - segmentHeight );
   this.position( this.y );
 
   this.elem.appendChild( this.img );
