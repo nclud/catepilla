@@ -37,18 +37,20 @@
 
   <h1>Catepilla</h1>
 
-  <div id="pic">
-    <img src="http://farm5.staticflickr.com/4119/4858565412_483fc5822c_z.jpg">
-  </div>
+  <ul id="pics">
+    <li><img src="http://farm5.staticflickr.com/4119/4858565412_483fc5822c_z.jpg"></li>
+    <li><img src="http://farm2.staticflickr.com/1170/5135053388_4f386692a3_z.jpg"></li>
+    <li><img src="http://farm5.staticflickr.com/4028/5134455355_530219749b_z.jpg"></li>
+  </ul>
 
 <script src="catepilla.js"></script>
 <script>
   
 function init() {
 
-  var pic = document.getElementById('pic');
+  var pics = document.getElementById('pics');
 
-  var cat = new Catepilla( pic, {
+  var cat = new Catepilla( pics, {
     
   });
   

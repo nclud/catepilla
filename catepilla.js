@@ -31,7 +31,7 @@ function Catepilla( elem, options ) {
     return;
   }
 
-  this.elem = elem;
+  this.list = elem;
 
   this.options = {};
 
@@ -56,21 +56,44 @@ Catepilla.defaults = {
 
 Catepilla.prototype.create = function() {
 
+  this.elem = document.createElement('div');
   this.elem.className += ' catepilla';
 
   // css for elem
   // this.elem.style.position = 'relative';
 
-  var w = this.width = this.elem.offsetWidth;
-  this.height = this.elem.offsetHeight;
+  var w = this.width = this.list.offsetWidth;
+  this.height = this.options.height;
 
-  this.img = this.elem.getElementsByTagName('img')[0];
+  // this.img = this.elem.getElementsByTagName('img')[0];
+
+  this.images = this.list.getElementsByTagName('img');
+
+  // load images
+  this.imagesData = {};
+  var src;
+  var loaderImg;
+  for (var i=0, len = this.images.length; i < len; i++) {
+    src = this.images[i].src;
+    loaderImg = new Image();
+    loaderImg.addEventListener( 'load', this, false );
+    loaderImg.src = src;
+  }
   
-  var loaderImg = new Image();
-  loaderImg.addEventListener( 'load', this, false );
-  loaderImg.src = this.img.src;
+
   
+  // this.imgData = {};
+  // 
+  // 
+  // var loaderImg = new Image();
+  // loaderImg.addEventListener( 'load', this, false );
+  // loaderImg.src = this.images[0].src;
+
 };
+
+// switch to image
+// wait until image needs to load before switching for it
+
 
 Catepilla.prototype._createSegments = function() {
 
@@ -110,6 +133,28 @@ Catepilla.prototype.segmentsEach = function( methodName ) {
   }
 };
 
+Catepilla.prototype.setSelectedIndex = function( index ) {
+  // don't proceed if not a new index
+  if ( index === this.selectedIndex ) {
+    return;
+  }
+
+  var imgData = this.imagesData[ index ];
+
+  this.selectedIndex = index;
+
+  if ( imgData.isLoaded ) {
+    this.setSelectedImage();
+  } else {
+    imgData.callback = this.setSelectedImage;
+  }
+
+};
+
+Catepilla.prototype.setSelectedImage = function( index ) {
+  var imgData = this.imagesData[ this.selectedIndex ];
+}
+
 // ----- event handling ----- //
 
 Catepilla.prototype.handleEvent = function( event ) {
@@ -121,11 +166,12 @@ Catepilla.prototype.handleEvent = function( event ) {
 
 // triggered after img loads
 Catepilla.prototype._loadHandler = function( event ) {
-  this.imgSize = {
-    width: event.target.width,
-    height: event.target.height
-  };
-  this._createSegments();
+  console.log( event.target.src );
+  // this.imgSize = {
+  //   width: event.target.width,
+  //   height: event.target.height
+  // };
+  // this._createSegments();
 };
 
 // put in global namespace
