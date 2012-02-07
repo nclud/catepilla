@@ -11,6 +11,23 @@
     border: 1px solid #CCC;
     width: 800px;
   }
+  
+  #pic > div {
+  }
+  
+  .catepilla {
+    position: relative;
+  }
+  
+  .catepilla .segment {
+    position: absolute;
+    overflow: hidden;
+    -webkit-transition: -webkit-transform 0.4s, opacity 0.4s;
+  }
+  
+  .catepilla .segment img {
+    position: absolute;
+  }
   </style>
   
   <script src="modernizr.js"></script>
@@ -31,11 +48,12 @@ function init() {
 
   var pic = document.getElementById('pic');
 
-  var myCat = new Catepilla( pic, {
+  var cat = new Catepilla( pic, {
     
   });
   
 
+  window.cat = cat;
 }
 
 

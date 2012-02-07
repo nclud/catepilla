@@ -48,13 +48,16 @@ function Catepilla( elem, options ) {
 
 
 Catepilla.defaults = {
-  segmentCount: 5
+  segmentCount: 5,
+  segmentHeight: 0.55
 };
 
 Catepilla.prototype.create = function() {
 
+  this.elem.className += ' catepilla';
+
   // css for elem
-  this.elem.style.position = 'relative';
+  // this.elem.style.position = 'relative';
 
   var w = this.width = this.elem.offsetWidth;
   this.height = this.elem.offsetHeight;
@@ -88,6 +91,7 @@ Catepilla.prototype._createSegments = function() {
       imgWidth: this.width
     });
     frag.appendChild( segment.elem );
+    this.segments.push( segment );
   }
 
   this.elem.appendChild( frag );
@@ -95,6 +99,12 @@ Catepilla.prototype._createSegments = function() {
 
 };
 
+
+Catepilla.prototype.segmentsEach = function( methodName ) {
+  for (var i=0, len = this.segments.length; i < len; i++) {
+    this.segments[i][ methodName ]();
+  }
+};
 
 // ----- event handling ----- //
 
@@ -126,26 +136,23 @@ function CatepillaSegment( props ) {
   }
 
   this.elem = document.createElement('div');
-  this.elem.style.position = 'absolute';
-  this.elem.style.overflow = 'hidden';
+  this.elem.className = 'segment';
   this.elem.style.width = this.width + 'px';
-  this.elem.style.height = '100%';
-  this.height = this.parent.height;
+  var segmentHeight = this.parent.options.segmentHeight;
+  this.elem.style.height = ( 100 * segmentHeight ) + '%';
+  // this.elem.style.opacity = 0;
 
   this.img = new Image();
   this.img.src = this.parent.img.src;
-  
 
   var imgSize = this.parent.imgSize;
-  
   var sizeRatio = this.imgWidth / imgSize.width;
   this.imgOffsetY = imgSize.height * ( 1 - sizeRatio );
   
   this.img.width = this.imgWidth;
-  this.img.style.position = 'absolute';
 
-
-  this.position( 0 );
+  this.y = Math.random() * this.parent.height * ( 1 - segmentHeight );
+  this.position( this.y );
 
   this.elem.appendChild( this.img );
 
@@ -153,7 +160,19 @@ function CatepillaSegment( props ) {
 
 CatepillaSegment.prototype.position = function( y ) {
   positionElem( this.elem, this.width * this.index, y );
-  positionElem( this.img, this.width * -this.index, y + this.imgOffsetY );
+  positionElem( this.img, this.width * -this.index, -y + this.imgOffsetY );
+};
+
+CatepillaSegment.prototype.hide = function() {
+  this.elem.style.opacity = 0;
+  var sign = Math.random() > 0.5 ? 1 : -1;
+  var hideY = this.parent.height * 1.5 * sign + this.parent.height / 2;
+  positionElem( this.elem, this.width * this.index, hideY );
+};
+
+CatepillaSegment.prototype.show = function() {
+  this.elem.style.opacity = 1;
+  this.position( this.y );
 };
 
 })( window );
