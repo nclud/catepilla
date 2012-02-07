@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <title>animation</title>
+
+  <style>
+  #cat {
+    width: 800px;
+    height: 400px;
+    border: 1px solid #CCC;
+    position: relative;
+  }
+  
+  .seg {
+    background: #888;
+    width: 20%;
+    height: 66%;
+    position: absolute;
+    overflow: hidden;
+    -webkit-animation: webkitWave 2s infinite alternate ease-in-out;
+       -moz-animation:    mozWave 2s infinite alternate ease-in-out;
+  }
+
+  .seg:hover, .seg:hover .inner {
+    -webkit-animation-play-state: paused;
+       -moz-animation-play-state: paused;
+/*-webkit-animation: none;*/
+  }
+
+  .seg .inner {
+    height: 100%;
+    background: url('http://farm5.staticflickr.com/4119/4858565412_483fc5822c_z.jpg');
+    width: 800px;
+    height: 400px;
+    position: absolute;
+    -webkit-animation: webkitInnerWave 2s infinite alternate ease-in-out;
+       -moz-animation:    mozInnerWave 2s infinite alternate ease-in-out;
+  }
+
+  .seg1 { left:  0%; }
+  .seg2 { left: 20%; }
+  .seg3 { left: 40%; }
+  .seg4 { left: 60%; }
+  .seg5 { left: 80%; }
+
+  .seg1 .inner { left:   -0%; }
+  .seg2 .inner { left: -100%; }
+  .seg3 .inner { left: -200%; }
+  .seg4 .inner { left: -300%; }
+  .seg5 .inner { left: -400%; }
+
+  .seg2, .seg2 .inner {
+    -webkit-animation-delay: 0.3s;
+       -moz-animation-delay: 0.3s;
+        -ms-animation-delay: 0.3s;
+         -o-animation-delay: 0.3s;
+            animation-delay: 0.3s;
+  }
+  .seg3, .seg3 .inner {
+    -webkit-animation-delay: 0.6s;
+       -moz-animation-delay: 0.6s;
+        -ms-animation-delay: 0.6s;
+         -o-animation-delay: 0.6s;
+            animation-delay: 0.6s;
+  }
+  .seg4, .seg4 .inner {
+    -webkit-animation-delay: 0.9s;
+       -moz-animation-delay: 0.9s;
+        -ms-animation-delay: 0.9s;
+         -o-animation-delay: 0.9s;
+            animation-delay: 0.9s;
+  }
+  .seg5, .seg5 .inner {
+    -webkit-animation-delay: 1.2s;
+       -moz-animation-delay: 1.2s;
+        -ms-animation-delay: 1.2s;
+         -o-animation-delay: 1.2s;
+            animation-delay: 1.2s;
+  }
+
+  @-webkit-keyframes webkitWave {
+      0% { -webkit-transform: translate( 0,   0% );  }
+    100% { -webkit-transform: translate( 0, 50% );  }
+  }
+
+  @-moz-keyframes mozWave {
+      0% { -moz-transform: translate( 0,   0% );  }
+    100% { -moz-transform: translate( 0, 50% );  }
+  }
+
+
+  @-webkit-keyframes webkitInnerWave {
+      0% { -webkit-transform: translate( 0,   0px );  }
+    100% { -webkit-transform: translate( 0, -33% ); }
+  }
+
+  @-moz-keyframes mozInnerWave {
+      0% { -moz-transform: translate( 0,   0% );  }
+    100% { -moz-transform: translate( 0, -33% );  }
+  }
+
+  </style>
+
+</head>
+<body>
+
+  <h1>animation</h1>
+
+<div id="cat">
+  <div class="seg seg1"><div class="inner"></div></div>
+  <div class="seg seg2"><div class="inner"></div></div>
+  <div class="seg seg3"><div class="inner"></div></div>
+  <div class="seg seg4"><div class="inner"></div></div>
+  <div class="seg seg5"><div class="inner"></div></div>
+</div>
+
+</body>
+</html>
