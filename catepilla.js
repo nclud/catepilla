@@ -209,10 +209,7 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
   var setIndexAfterHidden = function() {
     // reset segments y position
     _this.theta = Math.floor( Math.random() * 2 ) * Math.PI;
-    for ( var i=0, len = _this.segments.length; i < len; i++ ) {
-      _this.segments[i].y = ( Math.sin( i * Math.PI / 2 + _this.theta ) * 0.5 + 0.5 )
-        * _this.height * ( 1 - _this.options.segmentHeight );
-    }
+    _this.segmentsEach('setWiggleY');
 
     if ( imgData.isLoaded ) {
       _this.setSelectedImage();
@@ -280,11 +277,8 @@ Catepilla.prototype.wiggle = function() {
   }
 
   this.theta += wiggleSpeed;
-  for ( var i=0, len = this.segments.length; i < len; i++ ) {
-    var y = ( Math.sin( i * Math.PI / 2 + this.theta ) * 0.5 + 0.5 )
-            * this.height * ( 1 - this.options.segmentHeight )
-    this.segments[i].position( y );
-  }
+  this.segmentsEach('setWiggleY');
+  this.segmentsEach('position');
 
   if ( this.isWiggleSpeedDecelerating && wiggleSpeed < this.options.maxWiggleSpeed * 0.03 ) {
     // if decelerating
@@ -353,16 +347,22 @@ function CatepillaSegment( props ) {
 
   this.img = new Image();
 
-  this.position( this.y );
+  this.position();
   this.setTransitionsEnabled( true );
 
   this.elem.appendChild( this.img );
 
 }
 
-CatepillaSegment.prototype.position = function( y ) {
-  positionElem( this.elem, this.width * this.index, y );
-  positionElem( this.img, this.width * -this.index, -y + this.imgOffsetY );
+CatepillaSegment.prototype.setWiggleY = function() {
+  var parent = this.parent;
+  this.y = ( Math.sin( this.index * Math.PI / 2 + parent.theta ) * 0.5 + 0.5 ) *
+    parent.height * ( 1 - parent.options.segmentHeight );
+};
+
+CatepillaSegment.prototype.position = function() {
+  positionElem( this.elem, this.width * this.index, this.y );
+  positionElem( this.img, this.width * -this.index, -this.y + this.imgOffsetY );
 };
 
 CatepillaSegment.prototype.setImage = function( img ) {
@@ -385,7 +385,7 @@ CatepillaSegment.prototype.hide = function() {
 
 CatepillaSegment.prototype.show = function() {
   this.elem.style.opacity = 1;
-  this.position( this.y );
+  this.position();
 };
 
 CatepillaSegment.prototype.setTransitionsEnabled = function( enabled ) {
