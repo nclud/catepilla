@@ -10,7 +10,14 @@ var document = window.document;
 var Modernizr = window.Modernizr;
 // get convienent vars
 var transformProp = Modernizr.prefixed('transform');
+var transformCSSProp = {
+  'WebkitTransform': '-webkit-transform',
+  'MozTransform': '-moz-transform'
+}[ transformProp ];
+var durationProp= Modernizr.prefixed('transitionDuration');
 var delayProp = Modernizr.prefixed('transitionDelay');
+var transitionProp = Modernizr.prefixed('transition');
+var transitionPropertyProp = Modernizr.prefixed('transition-property');
 
 var positionElem = Modernizr.csstransforms3d ? function( elem, x, y ) {
     elem.style[ transformProp ] = 'translate3d(' + x + 'px, ' + y + 'px, 0)';
@@ -20,6 +27,15 @@ var positionElem = Modernizr.csstransforms3d ? function( elem, x, y ) {
     elem.style.left = x + 'px';
     elem.style.top = y + 'px';
   };
+
+var transEndEventName = {
+  'WebkitTransition' : 'webkitTransitionEnd',
+  'MozTransition'    : 'transitionend',
+  'OTransition'      : 'oTransitionEnd',
+  'msTransition'     : 'MSTransitionEnd',
+  'transition'       : 'transitionend'
+}[ transitionProp ];
+
 
 //
 
@@ -62,9 +78,10 @@ function Catepilla( elem, options ) {
 
 Catepilla.defaults = {
   segmentCount: 5,
+  height: 300,
   segmentHeight: 0.55,
-  perSegmentDelay: 0.05,
-  height: 300
+  transitionDuration: 0.2,
+  perSegmentDelay: 0.05
 };
 
 
@@ -85,7 +102,7 @@ Catepilla.prototype.create = function() {
   this.width = this.elem.offsetWidth;
 
   this._createSegments();
-  this.segmentsEach('hide');
+  this.hide();
 
   // add images
   var images = this.list.getElementsByTagName('img');
@@ -181,10 +198,31 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
 
   this.selectedIndex = index;
 
-  if ( imgData.isLoaded ) {
-    this.setSelectedImage();
+  // do fun stuff async, after transition
+  var _this = this;
+  var setIndexAfterHidden = function() {
+    // reset segments y position
+    var theta = Math.floor( Math.random() * 2 ) * Math.PI;
+    for ( var i=0, len = _this.segments.length; i < len; i++ ) {
+      _this.segments[i].y = ( Math.sin( i * Math.PI / 2 + theta ) * 0.5 + 0.5 )
+        * _this.height * ( 1 - _this.options.segmentHeight );
+    }
+
+    if ( imgData.isLoaded ) {
+      _this.setSelectedImage();
+    } else {
+      imgData.callback = _this.setSelectedImage;
+    }
+  }
+
+  var delay = ( this.options.transitionDuration +
+    this.options.perSegmentDelay * this.segments.length ) * 1000;
+
+  if ( this.isHidden ) {
+    setIndexAfterHidden();
   } else {
-    imgData.callback = this.setSelectedImage;
+    this.hide();
+    setTimeout( setIndexAfterHidden, delay );
   }
 
 };
@@ -193,7 +231,23 @@ Catepilla.prototype.setSelectedImage = function( index ) {
   console.log('★set selected image★');
   var img = this.images[ this.selectedIndex ];
   this.segmentsEach( 'setImage', img );
+  this.show()
+};
+
+Catepilla.prototype.show = function() {
+  if ( !this.isHidden ) {
+    return;
+  }
   this.segmentsEach('show');
+  this.isHidden = false;
+};
+
+Catepilla.prototype.hide = function( callback ) {
+  if ( this.isHidden ) {
+    return;
+  }
+  this.segmentsEach('hide');
+  this.isHidden = true;
 };
 
 // ----- event handling ----- //
@@ -235,6 +289,8 @@ function CatepillaSegment( props ) {
   this.elem.className = 'segment';
   this.elem.style.width = this.width + 'px';
   this.elem.style.height = ( 100 * opts.segmentHeight ) + '%';
+  this.elem.style[ transitionPropertyProp ] = transformCSSProp + ', opacity';
+  this.elem.style[ durationProp ] = opts.transitionDuration + 's';
   this.elem.style[ delayProp ] = ( opts.perSegmentDelay * this.index ) + 's';
 
   this.img = new Image();
