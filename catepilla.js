@@ -63,27 +63,32 @@ function Catepilla( elem, options ) {
 Catepilla.defaults = {
   segmentCount: 5,
   segmentHeight: 0.55,
-  perSegmentDelay: 0.05
+  perSegmentDelay: 0.05,
+  height: 300
 };
 
+
+/**
+ * creates gallery
+ */
 Catepilla.prototype.create = function() {
-
+  // create elem to hold segments
   this.elem = document.createElement('div');
-  this.elem.className += ' catepilla';
-
-  // css for elem
-  // this.elem.style.position = 'relative';
-
-  var w = this.width = this.list.offsetWidth;
+  this.elem.className = 'catepilla';
   this.height = this.options.height;
+  this.elem.style.height = this.height + 'px';
+  // add elem to DOM
+  this.list.parentNode.insertBefore( this.elem, this.list.nextSibling );
+  // hide original list elem
+  this.list.style.display = 'none';
+  // get width
+  this.width = this.elem.offsetWidth;
 
-  // this.img = this.elem.getElementsByTagName('img')[0];
+  this._createSegments();
 
+  // add images
   var images = this.list.getElementsByTagName('img');
-
-  // load images
   var src;
-  var loaderImg;
   for ( var i=0, len = images.length; i < len; i++ ) {
     src = images[i].src;
     this.addImage( src );
@@ -115,14 +120,7 @@ Catepilla.prototype.addImage = function( src ) {
   img.src = src;
 };
 
-// switch to image
-// wait until image needs to load before switching for it
-
-
 Catepilla.prototype._createSegments = function() {
-
-  console.log( this.img.offsetHeight );
-  this.img.style.display = 'none';
 
   var segmentCount = this.options.segmentCount;
   
@@ -138,7 +136,6 @@ Catepilla.prototype._createSegments = function() {
       parent: this,
       width: this.segmentWidth,
       index: i,
-      imgWidth: this.width,
       y: ( Math.sin( i * Math.PI / 2 + theta ) * 0.5 + 0.5 ) * this.height * ( 1 - this.options.segmentHeight )
     });
     frag.appendChild( segment.elem );
@@ -147,7 +144,6 @@ Catepilla.prototype._createSegments = function() {
 
   this.elem.appendChild( frag );
 
-
 };
 
 /**
@@ -155,8 +151,12 @@ Catepilla.prototype._createSegments = function() {
  * @param {String} methodName
  */
 Catepilla.prototype.segmentsEach = function( methodName ) {
+  var segment;
+  // pass in any other arguments after methodName
+  var args = Array.prototype.slice.call( arguments, 1 );
   for (var i=0, len = this.segments.length; i < len; i++) {
-    this.segments[i][ methodName ]();
+    segment = this.segments[i];
+    segment[ methodName ].apply( segment, args );
   }
 };
 
@@ -187,8 +187,10 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
 
 Catepilla.prototype.setSelectedImage = function( index ) {
   console.log('★set selected image★');
-  var imgData = this.imagesData[ this.selectedIndex ];
-}
+  var img = this.images[ this.selectedIndex ];
+  this.segmentsEach( 'setImage', img );
+  // var imgData = this.imagesData[ this.selectedIndex ];
+};
 
 // ----- event handling ----- //
 
@@ -207,7 +209,7 @@ Catepilla.prototype._loadHandler = function( event ) {
 
   // trigger callback
   if ( imgData.callback ) {
-    imgData.callback();
+    imgData.callback.call( this );
     delete imgData.callback;
   }
 };
@@ -233,13 +235,7 @@ function CatepillaSegment( props ) {
   // this.elem.style.opacity = 0;
 
   this.img = new Image();
-  this.img.src = this.parent.img.src;
 
-  var imgSize = this.parent.imgSize;
-  var sizeRatio = this.imgWidth / imgSize.width;
-  this.imgOffsetY = imgSize.height * ( 1 - sizeRatio );
-  
-  this.img.width = this.imgWidth;
 
   this.position( this.y );
 
@@ -250,6 +246,16 @@ function CatepillaSegment( props ) {
 CatepillaSegment.prototype.position = function( y ) {
   positionElem( this.elem, this.width * this.index, y );
   positionElem( this.img, this.width * -this.index, -y + this.imgOffsetY );
+};
+
+CatepillaSegment.prototype.setImage = function( img ) {
+  this.img.src = img.src;
+  this.img.width = this.parent.width;
+
+  var sizeRatio = this.parent.width / img.width;
+  this.imgOffsetY = img.height * ( 1 - sizeRatio );
+
+  this.position( this.y );
 };
 
 CatepillaSegment.prototype.hide = function() {
