@@ -87,7 +87,9 @@ Catepilla.defaults = {
   height: 300,
   segmentHeight: 0.55,
   transitionDuration: 0.2,
-  perSegmentDelay: 0.05
+  perSegmentDelay: 0.05,
+  maxWiggleSpeed: 0.1,
+  wiggleDelay: 1000
 };
 
 
@@ -238,9 +240,9 @@ Catepilla.prototype.setSelectedImage = function( index ) {
   this.show();
 
   var _this = this;
-  this.wiggleTimer = setTimeout( function(){
-    _this.wiggle()
-  }, 1000 );
+  setTimeout( function(){
+    _this.startWiggle()
+  }, this.options.wiggleDelay );
 };
 
 Catepilla.prototype.show = function() {
@@ -261,17 +263,21 @@ Catepilla.prototype.hide = function( callback ) {
 
 // ----- animation ----- //
 
-Catepilla.prototype.wiggle = function() {
+Catepilla.prototype.startWiggle = function() {
   this.segmentsEach( 'setTransitionsEnabled', false );
   this.wiggleStartTime = getNow();
-  this.animate();
+  this.wiggle();
 };
 
-Catepilla.prototype.animate = function() {
+Catepilla.prototype.wiggle = function() {
 
   var time = getNow() - this.wiggleStartTime;
 
-  var wiggleSpeed = ( Math.cos( time / 500 ) * -0.5 + 0.5 ) * 0.05;
+  var wiggleSpeed = ( Math.cos( time * 0.002 ) * -0.5 + 0.5 ) * this.options.maxWiggleSpeed;
+
+  if ( !this.isWiggleSpeedDecelerating && wiggleSpeed > this.options.maxWiggleSpeed * 0.97 ) {
+    this.isWiggleSpeedDecelerating = true;
+  }
 
   this.theta += wiggleSpeed;
   for ( var i=0, len = this.segments.length; i < len; i++ ) {
@@ -280,10 +286,27 @@ Catepilla.prototype.animate = function() {
     this.segments[i].position( y );
   }
 
+  if ( this.isWiggleSpeedDecelerating && wiggleSpeed < this.options.maxWiggleSpeed * 0.03 ) {
+    // if decelerating
+    this.stopWiggle();
+  } else {
+    // keep on wiggling
+    var _this = this;
+    setTimeout( function(){
+      _this.wiggle();
+    }, 17 );
+  }
+
+};
+
+Catepilla.prototype.stopWiggle = function() {
+  delete this.isWiggleSpeedDecelerating;
+  this.segmentsEach( 'setTransitionsEnabled', true );
+  var index = ( this.selectedIndex + 1 ) % ( this.images.length );
   var _this = this;
   setTimeout( function(){
-    _this.animate();
-  })
+    _this.setSelectedIndex( index );
+  }, this.options.wiggleDelay );
 };
 
 // ----- event handling ----- //
