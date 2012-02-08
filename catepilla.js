@@ -25,6 +25,12 @@ var positionElem = Modernizr.csstransforms3d ? function( elem, x, y ) {
 
 // -------------------------- Catepilla -------------------------- //
 
+
+/**
+ * @class Creates a new Catepilla gallery
+ * @param elem {Element} - The list element which contains images
+ * @param options {Object} - Optional options
+ */
 function Catepilla( elem, options ) {
 
   if ( !elem ) {
@@ -88,6 +94,9 @@ Catepilla.prototype.create = function() {
 
 };
 
+/**
+ * @param {String} src - The src or URL of an image
+ */
 Catepilla.prototype.addImage = function( src ) {
   // don't proceed if already added
   if ( this.imagesData[ src ] ) {
@@ -141,13 +150,20 @@ Catepilla.prototype._createSegments = function() {
 
 };
 
-
+/**
+ * Trigger a method on each segment in the instance
+ * @param {String} methodName
+ */
 Catepilla.prototype.segmentsEach = function( methodName ) {
   for (var i=0, len = this.segments.length; i < len; i++) {
     this.segments[i][ methodName ]();
   }
 };
 
+/**
+ * reveal
+ * @param {integer} index
+ */
 Catepilla.prototype.setSelectedIndex = function( index ) {
   // don't proceed if not a new index
   if ( index === this.selectedIndex ) {
