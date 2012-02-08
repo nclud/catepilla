@@ -37,6 +37,11 @@ var transEndEventName = {
 }[ transitionProp ];
 
 
+function getNow() {
+  return ( new Date() ).getTime();
+}
+
+
 //
 
 // -------------------------- Catepilla -------------------------- //
@@ -152,13 +157,11 @@ Catepilla.prototype._createSegments = function() {
 
   var segment;
   var frag = document.createDocumentFragment();
-  var theta = Math.floor( Math.random() * 2 ) * Math.PI;
   for ( var i=0; i < segmentCount; i++ ) {
     segment = new CatepillaSegment({
       parent: this,
       width: this.segmentWidth,
-      index: i,
-      y: ( Math.sin( i * Math.PI / 2 + theta ) * 0.5 + 0.5 ) * this.height * ( 1 - this.options.segmentHeight )
+      index: i
     });
     frag.appendChild( segment.elem );
     this.segments.push( segment );
@@ -203,9 +206,9 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
   var _this = this;
   var setIndexAfterHidden = function() {
     // reset segments y position
-    var theta = Math.floor( Math.random() * 2 ) * Math.PI;
+    _this.theta = Math.floor( Math.random() * 2 ) * Math.PI;
     for ( var i=0, len = _this.segments.length; i < len; i++ ) {
-      _this.segments[i].y = ( Math.sin( i * Math.PI / 2 + theta ) * 0.5 + 0.5 )
+      _this.segments[i].y = ( Math.sin( i * Math.PI / 2 + _this.theta ) * 0.5 + 0.5 )
         * _this.height * ( 1 - _this.options.segmentHeight );
     }
 
@@ -232,7 +235,12 @@ Catepilla.prototype.setSelectedImage = function( index ) {
   console.log('★set selected image★');
   var img = this.images[ this.selectedIndex ];
   this.segmentsEach( 'setImage', img );
-  this.show()
+  this.show();
+
+  var _this = this;
+  this.wiggleTimer = setTimeout( function(){
+    _this.wiggle()
+  }, 1000 );
 };
 
 Catepilla.prototype.show = function() {
@@ -253,17 +261,25 @@ Catepilla.prototype.hide = function( callback ) {
 
 // ----- animation ----- //
 
+Catepilla.prototype.wiggle = function() {
+  this.segmentsEach( 'setTransitionsEnabled', false );
+  this.wiggleStartTime = getNow();
+  this.animate();
+};
+
 Catepilla.prototype.animate = function() {
 
-  var theta = this.animationTimer / 180 * Math.PI;
+  var time = getNow() - this.wiggleStartTime;
+
+  var wiggleSpeed = ( Math.cos( time / 500 ) * -0.5 + 0.5 ) * 0.05;
+
+  this.theta += wiggleSpeed;
   for ( var i=0, len = this.segments.length; i < len; i++ ) {
-    this.segments[i].elem.style[ transitionProp ] = 'none';
-    var y = ( Math.sin( i * Math.PI / 2 + theta ) * 0.5 + 0.5 )
+    var y = ( Math.sin( i * Math.PI / 2 + this.theta ) * 0.5 + 0.5 )
             * this.height * ( 1 - this.options.segmentHeight )
     this.segments[i].position( y );
   }
 
-  this.animationTimer += 0.1;
   var _this = this;
   setTimeout( function(){
     _this.animate();
@@ -309,13 +325,13 @@ function CatepillaSegment( props ) {
   this.elem.className = 'segment';
   this.elem.style.width = this.width + 'px';
   this.elem.style.height = ( 100 * opts.segmentHeight ) + '%';
-  this.elem.style[ transitionPropertyProp ] = transformCSSProp + ', opacity';
   this.elem.style[ durationProp ] = opts.transitionDuration + 's';
   this.elem.style[ delayProp ] = ( opts.perSegmentDelay * this.index ) + 's';
 
   this.img = new Image();
 
   this.position( this.y );
+  this.setTransitionsEnabled( true );
 
   this.elem.appendChild( this.img );
 
@@ -347,6 +363,10 @@ CatepillaSegment.prototype.hide = function() {
 CatepillaSegment.prototype.show = function() {
   this.elem.style.opacity = 1;
   this.position( this.y );
+};
+
+CatepillaSegment.prototype.setTransitionsEnabled = function( enabled ) {
+  this.elem.style[ transitionPropertyProp ] = enabled ? transformCSSProp + ', opacity' : 'none';
 };
 
 })( window );
