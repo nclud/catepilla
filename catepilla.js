@@ -68,6 +68,7 @@ function Catepilla( elem, options ) {
   // default properties
   this.selectedIndex = -1;
   this.images = [];
+  this.animationTimer = 0;
   // used to keep track of images that have been loaded
   this.imagesData = {};
 
@@ -250,6 +251,25 @@ Catepilla.prototype.hide = function( callback ) {
   this.isHidden = true;
 };
 
+// ----- animation ----- //
+
+Catepilla.prototype.animate = function() {
+
+  var theta = this.animationTimer / 180 * Math.PI;
+  for ( var i=0, len = this.segments.length; i < len; i++ ) {
+    this.segments[i].elem.style[ transitionProp ] = 'none';
+    var y = ( Math.sin( i * Math.PI / 2 + theta ) * 0.5 + 0.5 )
+            * this.height * ( 1 - this.options.segmentHeight )
+    this.segments[i].position( y );
+  }
+
+  this.animationTimer += 0.1;
+  var _this = this;
+  setTimeout( function(){
+    _this.animate();
+  })
+};
+
 // ----- event handling ----- //
 
 Catepilla.prototype.handleEvent = function( event ) {
@@ -303,6 +323,7 @@ function CatepillaSegment( props ) {
 
 CatepillaSegment.prototype.position = function( y ) {
   positionElem( this.elem, this.width * this.index, y );
+  positionElem( this.img, this.width * -this.index, -y + this.imgOffsetY );
 };
 
 CatepillaSegment.prototype.setImage = function( img ) {
