@@ -43,6 +43,12 @@ function Catepilla( elem, options ) {
     this.options[ prop ] = options[ prop ];
   }
 
+  // default properties
+  this.selectedIndex = -1;
+  this.images = []
+  // used to keep track of images that have been loaded
+  this.imagesData = {};
+
   this.create();
 
 }
@@ -67,28 +73,37 @@ Catepilla.prototype.create = function() {
 
   // this.img = this.elem.getElementsByTagName('img')[0];
 
-  this.images = this.list.getElementsByTagName('img');
+  var images = this.list.getElementsByTagName('img');
 
   // load images
-  this.imagesData = {};
   var src;
   var loaderImg;
-  for (var i=0, len = this.images.length; i < len; i++) {
-    src = this.images[i].src;
-    loaderImg = new Image();
-    loaderImg.addEventListener( 'load', this, false );
-    loaderImg.src = src;
+  for ( var i=0, len = images.length; i < len; i++ ) {
+    src = images[i].src;
+    this.addImage( src );
   }
-  
 
-  
-  // this.imgData = {};
-  // 
-  // 
-  // var loaderImg = new Image();
-  // loaderImg.addEventListener( 'load', this, false );
-  // loaderImg.src = this.images[0].src;
+  // show first image
+  this.setSelectedIndex( 0 );
 
+};
+
+Catepilla.prototype.addImage = function( src ) {
+  // don't proceed if already added
+  if ( this.imagesData[ src ] ) {
+    return;
+  }
+  // load image
+  var img = new Image();
+  img.addEventListener( 'load', this, false );
+  // create object to keep track of its properties
+  this.imagesData[ src ] = {
+    index: this.images.length // backwards reference for this.images
+  };
+  // add to images
+  this.images.push( img )
+  // set src, which will trigger ._loadHander()
+  img.src = src;
 };
 
 // switch to image
@@ -138,8 +153,11 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
   if ( index === this.selectedIndex ) {
     return;
   }
+  console.log('⚑ setting selected index', index );
 
-  var imgData = this.imagesData[ index ];
+
+  var src = this.images[ index ].src
+  var imgData = this.imagesData[ src ];
 
   this.selectedIndex = index;
 
@@ -152,6 +170,7 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
 };
 
 Catepilla.prototype.setSelectedImage = function( index ) {
+  console.log('★set selected image★');
   var imgData = this.imagesData[ this.selectedIndex ];
 }
 
@@ -166,12 +185,15 @@ Catepilla.prototype.handleEvent = function( event ) {
 
 // triggered after img loads
 Catepilla.prototype._loadHandler = function( event ) {
-  console.log( event.target.src );
-  // this.imgSize = {
-  //   width: event.target.width,
-  //   height: event.target.height
-  // };
-  // this._createSegments();
+  var img = event.target;
+  var imgData = this.imagesData[ img.src ];
+  imgData.isLoaded = true;
+
+  // trigger callback
+  if ( imgData.callback ) {
+    imgData.callback();
+    delete imgData.callback;
+  }
 };
 
 // put in global namespace
