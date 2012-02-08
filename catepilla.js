@@ -85,6 +85,7 @@ Catepilla.prototype.create = function() {
   this.width = this.elem.offsetWidth;
 
   this._createSegments();
+  this.segmentsEach('hide');
 
   // add images
   var images = this.list.getElementsByTagName('img');
@@ -95,7 +96,10 @@ Catepilla.prototype.create = function() {
   }
 
   // show first image
-  this.setSelectedIndex( 0 );
+  var _this = this;
+  setTimeout( function() {
+    _this.setSelectedIndex( 0 );
+  }, 100 );
 
 };
 
@@ -124,7 +128,7 @@ Catepilla.prototype._createSegments = function() {
 
   var segmentCount = this.options.segmentCount;
   
-  this.segmentWidth = this.width / segmentCount;
+  this.segmentWidth = Math.floor( this.width / segmentCount );
   
   this.segments = [];
 
@@ -189,7 +193,7 @@ Catepilla.prototype.setSelectedImage = function( index ) {
   console.log('★set selected image★');
   var img = this.images[ this.selectedIndex ];
   this.segmentsEach( 'setImage', img );
-  // var imgData = this.imagesData[ this.selectedIndex ];
+  this.segmentsEach('show');
 };
 
 // ----- event handling ----- //
@@ -232,10 +236,8 @@ function CatepillaSegment( props ) {
   this.elem.style.width = this.width + 'px';
   this.elem.style.height = ( 100 * opts.segmentHeight ) + '%';
   this.elem.style[ delayProp ] = ( opts.perSegmentDelay * this.index ) + 's';
-  // this.elem.style.opacity = 0;
 
   this.img = new Image();
-
 
   this.position( this.y );
 
@@ -245,7 +247,6 @@ function CatepillaSegment( props ) {
 
 CatepillaSegment.prototype.position = function( y ) {
   positionElem( this.elem, this.width * this.index, y );
-  positionElem( this.img, this.width * -this.index, -y + this.imgOffsetY );
 };
 
 CatepillaSegment.prototype.setImage = function( img ) {
@@ -255,7 +256,8 @@ CatepillaSegment.prototype.setImage = function( img ) {
   var sizeRatio = this.parent.width / img.width;
   this.imgOffsetY = img.height * ( 1 - sizeRatio );
 
-  this.position( this.y );
+  positionElem( this.img, this.width * -this.index, -this.y + this.imgOffsetY );
+
 };
 
 CatepillaSegment.prototype.hide = function() {
