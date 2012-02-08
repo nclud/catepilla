@@ -10,7 +10,7 @@ var document = window.document;
 var Modernizr = window.Modernizr;
 // get convienent vars
 var transformProp = Modernizr.prefixed('transform');
-var delayProp = Modernizr.prefixed('transitionDelay')
+var delayProp = Modernizr.prefixed('transitionDelay');
 
 var positionElem = Modernizr.csstransforms3d ? function( elem, x, y ) {
     elem.style[ transformProp ] = 'translate3d(' + x + 'px, ' + y + 'px, 0)';
@@ -51,7 +51,7 @@ function Catepilla( elem, options ) {
 
   // default properties
   this.selectedIndex = -1;
-  this.images = []
+  this.images = [];
   // used to keep track of images that have been loaded
   this.imagesData = {};
 
@@ -110,7 +110,7 @@ Catepilla.prototype.addImage = function( src ) {
     index: this.images.length // backwards reference for this.images
   };
   // add to images
-  this.images.push( img )
+  this.images.push( img );
   // set src, which will trigger ._loadHander()
   img.src = src;
 };
@@ -172,7 +172,7 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
   console.log('⚑ setting selected index', index );
 
 
-  var src = this.images[ index ].src
+  var src = this.images[ index ].src;
   var imgData = this.imagesData[ src ];
 
   this.selectedIndex = index;
