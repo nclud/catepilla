@@ -219,7 +219,7 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
     } else {
       imgData.callback = _this.setSelectedImage;
     }
-  }
+  };
 
   var delay = ( this.options.transitionDuration +
     this.options.perSegmentDelay * this.segments.length ) * 1000;
@@ -241,7 +241,7 @@ Catepilla.prototype.setSelectedImage = function( index ) {
 
   var _this = this;
   setTimeout( function(){
-    _this.startWiggle()
+    _this.startWiggle();
   }, this.options.wiggleDelay );
 };
 
