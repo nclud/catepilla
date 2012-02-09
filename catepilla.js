@@ -12,7 +12,10 @@ var Modernizr = window.Modernizr;
 var transformProp = Modernizr.prefixed('transform');
 var transformCSSProp = {
   'WebkitTransform': '-webkit-transform',
-  'MozTransform': '-moz-transform'
+     'MozTransform':    '-moz-transform',
+      'msTransform':     '-ms-transform',
+       'OTransform':      '-o-transform',
+        'transform':         'transform'
 }[ transformProp ];
 var durationProp= Modernizr.prefixed('transitionDuration');
 var delayProp = Modernizr.prefixed('transitionDelay');
@@ -121,10 +124,7 @@ Catepilla.prototype.create = function() {
   }
 
   // show first image
-  var _this = this;
-  setTimeout( function() {
-    _this.setSelectedIndex( 0 );
-  }, 100 );
+  this.setSelectedIndex( 0 );
 
 };
 
@@ -196,7 +196,7 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
   if ( index === this.selectedIndex ) {
     return;
   }
-  console.log('⚑ setting selected index', index );
+  // console.log('⚑ setting selected index', index );
 
 
   var src = this.images[ index ].src;
@@ -231,7 +231,7 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
 };
 
 Catepilla.prototype.setSelectedImage = function( index ) {
-  console.log('★set selected image★');
+  // console.log('★set selected image★');
   var img = this.images[ this.selectedIndex ];
   this.segmentsEach( 'setImage', img );
   this.show();
