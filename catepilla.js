@@ -73,7 +73,7 @@ function Catepilla( elem, options ) {
   // default properties
   this.selectedIndex = -1;
   this.images = [];
-  this.animationTimer = 0;
+
   // used to keep track of images that have been loaded
   this.imagesData = {};
 
@@ -236,10 +236,10 @@ Catepilla.prototype.setSelectedImage = function( index ) {
   this.segmentsEach( 'setImage', img );
   this.show();
 
-  var _this = this;
-  setTimeout( function(){
+  // start animation
+  this.setAnimationTimeout( this.options.wiggleDelay, function( _this ) {
     _this.startWiggle();
-  }, this.options.wiggleDelay );
+  });
 };
 
 Catepilla.prototype.show = function() {
@@ -260,14 +260,27 @@ Catepilla.prototype.hide = function( callback ) {
 
 // ----- animation ----- //
 
+
+/**
+ * set a setTimeout for a frame of animation
+ * @param {Integer} delay - Delay of animation in milliseconds
+ * @param {Function} animation - Function triggered for a frame of animation
+ */
+Catepilla.prototype.setAnimationTimeout = function( delay, animation ) {
+  if ( this.animationTimeout ) {
+    clearTimeout( this.animationTimeout );
+  }
+  this.animationTimeout = setTimeout( animation, delay, this );
+};
+
 Catepilla.prototype.startWiggle = function() {
+  this.isAnimating = true;
   this.segmentsEach( 'setTransitionsEnabled', false );
   this.wiggleStartTime = getNow();
   this.wiggle();
 };
 
 Catepilla.prototype.wiggle = function() {
-
   var time = getNow() - this.wiggleStartTime;
 
   var wiggleSpeed = ( Math.cos( time * 0.002 ) * -0.5 + 0.5 ) * this.options.maxWiggleSpeed;
@@ -280,27 +293,33 @@ Catepilla.prototype.wiggle = function() {
   this.segmentsEach('setWiggleY');
   this.segmentsEach('position');
 
-  if ( this.isWiggleSpeedDecelerating && wiggleSpeed < this.options.maxWiggleSpeed * 0.03 ) {
-    // if decelerating
-    this.stopWiggle();
+  var isWiggleEnded = this.isWiggleSpeedDecelerating && wiggleSpeed < this.options.maxWiggleSpeed * 0.03;
+  if ( isWiggleEnded || !this.isAnimating ) {
+    // if animation has stopped
+    this.stopAnimation();
+    // after wiggle ends, switch to the next image, after delay
+    var index = ( this.selectedIndex + 1 ) % ( this.images.length );
+    this.setAnimationTimeout( this.options.wiggleDelay, function( _this ) {
+      _this.setSelectedIndex( index );
+    });
   } else {
     // keep on wiggling
     var _this = this;
-    setTimeout( function(){
+    this.setAnimationTimeout( 17, function( _this ) {
       _this.wiggle();
-    }, 17 );
+    });
   }
 
 };
 
-Catepilla.prototype.stopWiggle = function() {
+Catepilla.prototype.stopAnimation = function() {
   delete this.isWiggleSpeedDecelerating;
+  // disable css transtiions
   this.segmentsEach( 'setTransitionsEnabled', true );
-  var index = ( this.selectedIndex + 1 ) % ( this.images.length );
-  var _this = this;
-  setTimeout( function(){
-    _this.setSelectedIndex( index );
-  }, this.options.wiggleDelay );
+  this.isAnimating = false;
+  if ( this.animationTimeout ) {
+    clearTimeout( this.animationTimeout );
+  }
 };
 
 // ----- event handling ----- //
