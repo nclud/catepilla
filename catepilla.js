@@ -389,7 +389,7 @@ CatepillaSegment.prototype.setImage = function( img ) {
   this.img.width = this.parent.width;
 
   var sizeRatio = this.parent.width / img.width;
-  this.imgOffsetY = img.height * ( 1 - sizeRatio );
+  this.imgOffsetY = img.height * ( 1 - sizeRatio ) * 0.5;
 
   positionElem( this.img, this.width * -this.index, -this.y + this.imgOffsetY );
 
