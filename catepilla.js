@@ -238,7 +238,7 @@ Catepilla.prototype.setSelectedImage = function( index ) {
 
   // start animation
   this.setAnimationTimeout( this.options.wiggleDelay, function( _this ) {
-    _this.startWiggle();
+    _this.startAnimation();
   });
 };
 
@@ -273,7 +273,7 @@ Catepilla.prototype.setAnimationTimeout = function( delay, animation ) {
   this.animationTimeout = setTimeout( animation, delay, this );
 };
 
-Catepilla.prototype.startWiggle = function() {
+Catepilla.prototype.startAnimation = function() {
   this.isAnimating = true;
   this.segmentsEach( 'setTransitionsEnabled', false );
   this.wiggleStartTime = getNow();
