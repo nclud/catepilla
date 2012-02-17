@@ -1,5 +1,7 @@
 /**
 * Catepilla - a silly image plugin
+*
+* Requires Modernizr
 */
 
 /*jshint forin: false */
@@ -78,7 +80,6 @@ function Catepilla( elem, options ) {
   // default properties
   this.selectedIndex = -1;
   this.images = [];
-  this.startAngle = Math.floor( Math.random() * 2 ) * Math.PI;
   this.wiggleSpeed = 0;
 
   // used to keep track of images that have been loaded
@@ -98,7 +99,8 @@ Catepilla.defaults = {
   wiggleAcceleration: 0.001,
   maxWiggleSpeed: 0.1,
   wiggleDelay: 1000,
-  isAutoAdvancing: true
+  isAutoAdvancing: true,
+  startAngle: Math.PI
 };
 
 
@@ -214,7 +216,7 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
   var _this = this;
   var setIndexAfterHidden = function() {
     // reset segments y position
-    _this.theta = _this.startAngle;
+    _this.theta = _this.options.startAngle;
     _this.segmentsEach('setWiggleY');
 
     if ( imgData.isLoaded ) {
@@ -264,6 +266,15 @@ Catepilla.prototype.hide = function( callback ) {
   this.isHidden = true;
 };
 
+// advance to next image
+Catepilla.prototype.next = function() {
+  if ( this.isAnimating ) {
+    return;
+  }
+  var index = ( this.selectedIndex + 1 ) % ( this.images.length );
+  this.setSelectedIndex( index );
+};
+
 // ----- animation ----- //
 
 
@@ -308,9 +319,8 @@ Catepilla.prototype.wiggle = function() {
     this.stopAnimation();
     // after wiggle ends, switch to the next image, after delay
     if ( this.options.isAutoAdvancing ) {
-      var index = ( this.selectedIndex + 1 ) % ( this.images.length );
       this.setAnimationTimeout( this.options.wiggleDelay, function( _this ) {
-        _this.setSelectedIndex( index );
+        _this.next();
       });
     }
   } else {
@@ -327,7 +337,8 @@ Catepilla.prototype.startDeceleration = function() {
   this.isAccelerating = false;
   var speed = this.wiggleSpeed;
   var rotations = Math.ceil( speed / 0.05 );
-  var destinationAngle = TWO_PI * rotations + this.startAngle;
+  // return to original angle
+  var destinationAngle = TWO_PI * rotations + this.options.startAngle;
   this.deceleration = -( speed * speed ) / ( 2 * ( destinationAngle - this.theta ) + speed );
 };
 
