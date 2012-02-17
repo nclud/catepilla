@@ -40,6 +40,8 @@ var transEndEventName = {
 }[ transitionProp ];
 
 
+var TWO_PI = Math.PI * 2;
+
 function getNow() {
   return ( new Date() ).getTime();
 }
@@ -76,6 +78,8 @@ function Catepilla( elem, options ) {
   // default properties
   this.selectedIndex = -1;
   this.images = [];
+  this.startAngle = Math.floor( Math.random() * 2 ) * Math.PI;
+  this.wiggleSpeed = 0;
 
   // used to keep track of images that have been loaded
   this.imagesData = {};
@@ -91,8 +95,10 @@ Catepilla.defaults = {
   segmentHeight: 0.55,
   transitionDuration: 0.2,
   perSegmentDelay: 0.05,
+  wiggleAcceleration: 0.001,
   maxWiggleSpeed: 0.1,
-  wiggleDelay: 1000
+  wiggleDelay: 1000,
+  isAutoAdvancing: true
 };
 
 
@@ -208,7 +214,7 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
   var _this = this;
   var setIndexAfterHidden = function() {
     // reset segments y position
-    _this.theta = Math.floor( Math.random() * 2 ) * Math.PI;
+    _this.theta = _this.startAngle;
     _this.segmentsEach('setWiggleY');
 
     if ( imgData.isLoaded ) {
@@ -275,6 +281,7 @@ Catepilla.prototype.setAnimationTimeout = function( delay, animation ) {
 
 Catepilla.prototype.startAnimation = function() {
   this.isAnimating = true;
+  this.isAccelerating = true;
   this.segmentsEach( 'setTransitionsEnabled', false );
   this.wiggleStartTime = getNow();
   this.wiggle();
@@ -283,25 +290,29 @@ Catepilla.prototype.startAnimation = function() {
 Catepilla.prototype.wiggle = function() {
   var time = getNow() - this.wiggleStartTime;
 
-  var wiggleSpeed = ( Math.cos( time * 0.002 ) * -0.5 + 0.5 ) * this.options.maxWiggleSpeed;
+  this.wiggleSpeed += this.isAccelerating ? this.options.wiggleAcceleration : this.deceleration;
+  this.wiggleSpeed = Math.max( 0, Math.min( this.options.maxWiggleSpeed, this.wiggleSpeed ) );
 
-  if ( !this.isWiggleSpeedDecelerating && wiggleSpeed > this.options.maxWiggleSpeed * 0.97 ) {
-    this.isWiggleSpeedDecelerating = true;
-  }
-
-  this.theta += wiggleSpeed;
+  // apply rotation
+  this.theta += this.wiggleSpeed;
   this.segmentsEach('setWiggleY');
   this.segmentsEach('position');
 
-  var isWiggleEnded = this.isWiggleSpeedDecelerating && wiggleSpeed < this.options.maxWiggleSpeed * 0.03;
-  if ( isWiggleEnded || !this.isAnimating ) {
+  // if speed has reach it's maximum
+  if ( this.isAccelerating && this.wiggleSpeed === this.options.maxWiggleSpeed ) {
+    this.startDeceleration();
+  }
+
+  if ( !this.isAccelerating && this.wiggleSpeed === 0 ) {
     // if animation has stopped
     this.stopAnimation();
     // after wiggle ends, switch to the next image, after delay
-    var index = ( this.selectedIndex + 1 ) % ( this.images.length );
-    this.setAnimationTimeout( this.options.wiggleDelay, function( _this ) {
-      _this.setSelectedIndex( index );
-    });
+    if ( this.options.isAutoAdvancing ) {
+      var index = ( this.selectedIndex + 1 ) % ( this.images.length );
+      this.setAnimationTimeout( this.options.wiggleDelay, function( _this ) {
+        _this.setSelectedIndex( index );
+      });
+    }
   } else {
     // keep on wiggling
     var _this = this;
@@ -312,8 +323,16 @@ Catepilla.prototype.wiggle = function() {
 
 };
 
+Catepilla.prototype.startDeceleration = function() {
+  this.isAccelerating = false;
+  var speed = this.wiggleSpeed;
+  var rotations = Math.ceil( speed / 0.05 );
+  var destinationAngle = TWO_PI * rotations + this.startAngle;
+  this.deceleration = -( speed * speed ) / ( 2 * ( destinationAngle - this.theta ) + speed );
+};
+
 Catepilla.prototype.stopAnimation = function() {
-  delete this.isWiggleSpeedDecelerating;
+  delete this.isAccelerating;
   // disable css transtiions
   this.segmentsEach( 'setTransitionsEnabled', true );
   this.isAnimating = false;
