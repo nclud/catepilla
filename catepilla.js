@@ -1,7 +1,7 @@
 /**
 * Catepilla - a silly image plugin
 *
-* Requires Modernizr
+* Requires Modernizr 2.5 and requestAnimationFrame polyfill
 */
 
 /*jshint forin: false */
@@ -44,12 +44,6 @@ var transEndEventName = {
 
 var TWO_PI = Math.PI * 2;
 
-function getNow() {
-  return ( new Date() ).getTime();
-}
-
-
-//
 
 // -------------------------- Catepilla -------------------------- //
 
@@ -292,16 +286,23 @@ Catepilla.prototype.setAnimationTimeout = function( delay, animation ) {
   this.animationTimeout = setTimeout( animation, delay, this );
 };
 
+
+/**
+ * use requestAnimationFrame to animate a function
+ * @param {Function} animationFn - animation run every frame
+ */
+Catepilla.prototype.animateFrame = function( animationFn ) {
+  this.animationFrameId = window.requestAnimationFrame( animationFn.bind( this ) );
+};
+
 Catepilla.prototype.startAnimation = function() {
   this.isAnimating = true;
   this.isAccelerating = true;
   this.segmentsEach( 'setTransitionsEnabled', false );
-  this.wiggleStartTime = getNow();
   this.wiggle();
 };
 
 Catepilla.prototype.wiggle = function() {
-  var time = getNow() - this.wiggleStartTime;
 
   this.wiggleAcceleration = this.isAccelerating ? this.options.wiggleAcceleration : this.deceleration;
 
@@ -331,10 +332,7 @@ Catepilla.prototype.wiggle = function() {
     }
   } else if ( this.isAnimating ) {
     // keep on wiggling
-    var _this = this;
-    this.setAnimationTimeout( 17, function( _this ) {
-      _this.wiggle();
-    });
+    this.animateFrame( this.wiggle );
   }
 
 };
@@ -356,6 +354,10 @@ Catepilla.prototype.stopAnimation = function() {
   this.isAnimating = false;
   if ( this.animationTimeout ) {
     clearTimeout( this.animationTimeout );
+  }
+  if ( isFinite( this.animationFrameId ) ) {
+    window.cancelAnimationFrame( this.animationFrameId );
+    delete this.animationFrameId;
   }
 };
 
