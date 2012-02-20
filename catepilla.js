@@ -220,9 +220,9 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
     _this.segmentsEach('setWiggleY');
 
     if ( imgData.isLoaded ) {
-      _this.setSelectedImage();
+      _this._setSelectedImage();
     } else {
-      imgData.callback = _this.setSelectedImage;
+      imgData.callback = _this._setSelectedImage;
     }
   };
 
@@ -238,7 +238,7 @@ Catepilla.prototype.setSelectedIndex = function( index ) {
 
 };
 
-Catepilla.prototype.setSelectedImage = function( index ) {
+Catepilla.prototype._setSelectedImage = function( index ) {
   // console.log('★set selected image★');
   var img = this.images[ this.selectedIndex ];
   this.segmentsEach( 'setImage', img );
