@@ -244,9 +244,7 @@ Catepilla.prototype._setSelectedImage = function( index ) {
   this.show();
 
   // start animation
-  this.setAnimationTimeout( this.options.wiggleDelay, function( _this ) {
-    _this.startAnimation();
-  });
+  this.setAnimationTimeout( this.options.wiggleDelay, this.startAnimation );
 };
 
 Catepilla.prototype.show = function() {
@@ -283,7 +281,7 @@ Catepilla.prototype.setAnimationTimeout = function( delay, animation ) {
   if ( this.animationTimeout ) {
     clearTimeout( this.animationTimeout );
   }
-  this.animationTimeout = setTimeout( animation, delay, this );
+  this.animationTimeout = setTimeout( animation.bind( this ), delay );
 };
 
 
@@ -326,9 +324,7 @@ Catepilla.prototype.wiggle = function() {
     this.stopAnimation();
     // after wiggle ends, switch to the next image, after delay
     if ( this.options.isAutoAdvancing ) {
-      this.setAnimationTimeout( this.options.wiggleDelay, function( _this ) {
-        _this.next();
-      });
+      this.setAnimationTimeout( this.options.wiggleDelay, this.next );
     }
   } else if ( this.isAnimating ) {
     // keep on wiggling
