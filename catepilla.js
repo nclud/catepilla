@@ -267,9 +267,11 @@ Catepilla.prototype.hide = function( callback ) {
   this.stopAnimation();
 };
 
-// advance to next image
+/**
+ * advance to next image
+**/
 Catepilla.prototype.next = function() {
-  var index = ( this.selectedIndex + 1 ) % ( this.images.length );
+  var index = ( this.selectedIndex + 1 ) % this.images.length;
   this.setSelectedIndex( index );
 };
 
