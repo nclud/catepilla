@@ -298,6 +298,9 @@ Catepilla.prototype.animateFrame = function( animationFn ) {
 };
 
 Catepilla.prototype.startAnimation = function() {
+  if ( this.isAnimating ) {
+    return;
+  }
   this.isAnimating = true;
   this.isAccelerating = true;
   this.segmentsEach( 'setTransitionsEnabled', false );
