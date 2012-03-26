@@ -1,12 +1,15 @@
 /**
-* Catepilla - a silly image plugin
+* Catepilla - a wiggly image plugin
 *
 * Requires Modernizr 2.5 and requestAnimationFrame polyfill
 */
 
-/*jshint forin: false */
+/*jshint asi: false, curly: true, eqeqeq: true, forin: false, newcap: true, noempty: true, strict: true, undef: true, browser: true */
 
 (function( window, undefined ) {
+
+'use strict';
+
 // get global vars
 var document = window.document;
 var Modernizr = window.Modernizr;
@@ -195,7 +198,7 @@ Catepilla.prototype.segmentsEach = function( methodName ) {
  */
 Catepilla.prototype.setSelectedIndex = function( index ) {
   // don't proceed if not a new index
-  if ( index === this.selectedIndex ) {
+  if ( index === this.selectedIndex || index < 0 || index > this.images.length - 1 ) {
     return;
   }
   // console.log('⚑ setting selected index', index );
@@ -424,7 +427,7 @@ CatepillaSegment.prototype.setImage = function( img ) {
   this.img.width = this.parent.width;
 
   var sizeRatio = this.parent.width / img.width;
-  this.imgOffsetY = img.height * ( 1 - sizeRatio ) * 0.5;
+  this.imgOffsetY = ( this.parent.height - img.height * sizeRatio ) / 2;
 
   positionElem( this.img, this.width * -this.index, -this.y + this.imgOffsetY );
 
