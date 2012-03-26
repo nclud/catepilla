@@ -1,5 +1,6 @@
 /**
-* Catepilla - a wiggly image plugin
+* Catepilla v1.0.00
+* a wiggly image gallery script
 *
 * Requires Modernizr 2.5 and requestAnimationFrame polyfill
 */
