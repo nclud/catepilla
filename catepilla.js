@@ -289,14 +289,6 @@ Catepilla.prototype.setAnimationTimeout = function( delay, animation ) {
 };
 
 
-/**
- * use requestAnimationFrame to animate a function
- * @param {Function} animationFn - animation run every frame
- */
-Catepilla.prototype.animateFrame = function( animationFn ) {
-  this.animationFrameId = window.requestAnimationFrame( animationFn.bind( this ) );
-};
-
 Catepilla.prototype.startAnimation = function() {
   if ( this.isAnimating ) {
     return;
@@ -335,7 +327,7 @@ Catepilla.prototype.wiggle = function() {
     }
   } else if ( this.isAnimating ) {
     // keep on wiggling
-    this.animateFrame( this.wiggle );
+    this.animationFrameId = window.requestAnimationFrame( this.wiggle.bind( this ) );
   }
 
 };
