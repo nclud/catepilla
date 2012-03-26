@@ -4,7 +4,7 @@
 
 Demo: [nclud.github.com/catepilla](nclud.github.com/catepilla)
 
-Custom gallery script developed for [nclud.com](http://nclud.com) v3.
+Custom built developed for [nclud.com](http://nclud.com) v3. Probably not that useful for anyone else.
 
 ## Modernizr
 
@@ -52,11 +52,24 @@ var cat = new Catepilla( elem, {
 
 
 ``` js
+// reveal segments
+cat.show();
+
+// reveal segments
+cat.hide();
+
+// stop wigglin' and stop cycle
+cat.stopAnimation()
+
+// start wigglin' and re-start cycle
+cat.startAnimation()
+
+// select next image
+cat.next()
+
+// selects image
+cat.setSelectedIndex( 2 )
 
 // adds image to gallery images, accpets URL string 
 cat.addImage('http://example.com/my-pic.jpg')
-
-// selects image with 
-cat.setSelectedIndex( 2 )
-
-//
+```
