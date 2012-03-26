@@ -6,13 +6,14 @@
   <title>Catepilla</title>
   
   <style>
+  body {
+    font-family: sans-serif;
+  }
+  
   #pic {
     height: 400px;
     border: 1px solid #CCC;
     width: 800px;
-  }
-  
-  #pic > div {
   }
   
   .catepilla {
@@ -35,6 +36,26 @@
 <body>
 
   <h1>Catepilla</h1>
+  <h3>A wiggly image gallery script</h3>
+
+  <div id="controls">
+    <p>
+      <button id="stop">stopAnimation</button>
+      <button id="start">startAnimation</button>
+      <button id="show">show</button>
+      <button id="hide">hide</button>
+      <button id="next">next</button>
+    </p>
+    <p id="select-image">
+      Select image: 
+      <button data-select-index="0">image 1</button>
+      <button data-select-index="1">image 2</button>
+      <button data-select-index="2">image 3</button>
+      <button data-select-index="3">image 4</button>
+      <button data-select-index="4">image 5</button>
+      <button data-select-index="5">image 6</button>
+    </p>
+  </div>
 
   <ul id="pics">
     <li><img src="http://farm5.staticflickr.com/4119/4858565412_483fc5822c_z.jpg"></li>
@@ -50,20 +71,49 @@
 <script src="request-animation-frame/requestanimationframe.js"></script>
 <script src="catepilla.js"></script>
 <script>
-  
+var cat;
+
 function init() {
 
-  var pics = document.getElementById('pics');
+  var pics = document.getElementById('pics')
 
-  var cat = new Catepilla( pics, {
+  cat = new Catepilla( pics, {
     height: 400,
     wiggleDelay: 2000
-  });
+  })
+
+  // simple methods
+  document.getElementById('stop').addEventListener( 'click', function() {
+    cat.stopAnimation()
+  }, false )
+
+  document.getElementById('start').addEventListener( 'click', function() {
+    cat.startAnimation()
+  }, false )
+
+  document.getElementById('show').addEventListener( 'click', function() {
+    cat.show()
+  }, false )
+
+  document.getElementById('hide').addEventListener( 'click', function() {
+    cat.hide()
+  }, false )
+
+  document.getElementById('next').addEventListener( 'click', function() {
+    cat.next()
+  }, false )
+
+  document.getElementById('select-image').addEventListener( 'click', function( event ) {
+    if ( event.target.nodeName.toLowerCase() !== 'button' ) {
+      return
+    }
+    var index = parseInt( event.target.getAttribute('data-select-index'), 10 );
+    cat.setSelectedIndex( index );
+  }, false )
 
 }
 
-
-window.addEventListener( 'DOMContentLoaded', init, false );
+window.addEventListener( 'DOMContentLoaded', init, false )
 </script>
 
 </body>
