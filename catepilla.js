@@ -304,7 +304,7 @@ Catepilla.prototype.startAnimation = function() {
 };
 
 Catepilla.prototype.wiggle = function() {
-
+  // console.log('wiggle');
   this.wiggleAcceleration = this.isAccelerating ? this.options.wiggleAcceleration : this.deceleration;
 
   this.wiggleSpeed += this.wiggleAcceleration;
@@ -346,6 +346,7 @@ Catepilla.prototype.startDeceleration = function() {
 };
 
 Catepilla.prototype.stopAnimation = function() {
+  // console.log('stopping animation');
   this.isAccelerating = false;
   this.wiggleSpeed = 0;
   // disable css transtiions
