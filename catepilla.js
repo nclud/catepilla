@@ -264,6 +264,7 @@ Catepilla.prototype.hide = function( callback ) {
   }
   this.segmentsEach('hide');
   this.isHidden = true;
+  this.stopAnimation();
 };
 
 // advance to next image
