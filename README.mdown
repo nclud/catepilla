@@ -6,6 +6,16 @@ _Make that image gallery get all wiggly_
 
 Custom built developed for [nclud.com](http://nclud.com) v3. Probably not that useful for anyone else.
 
+## Clone from GitHub
+
+Don't forget to update/init submodules to get the [requestAnimationFrame polyfill](https://gist.github.com/1866474)
+
+``` bash
+git clone https://github.com/nclud/catepilla.git
+cd catepilla
+git submodule update --init
+```
+
 ## Modernizr
 
 [Modernizr v2.5+](http://www.modernizr.com/download/#-csstransforms-csstransforms3d-prefixed-teststyles-testprop-testallprops-prefixes-domprefixes) is required with the following options:
