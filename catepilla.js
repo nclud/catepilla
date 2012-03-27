@@ -1,7 +1,7 @@
 /**
 * Catepilla v1.0.00
 * Make that image gallery get all wiggly
-*
+* https://github.com/nclud/catepilla
 * Requires Modernizr 2.5 and requestAnimationFrame polyfill
 */
 
