@@ -1,6 +1,6 @@
 /**
 * Catepilla v1.0.00
-* a wiggly image gallery script
+* Make that image gallery get all wiggly
 *
 * Requires Modernizr 2.5 and requestAnimationFrame polyfill
 */
