@@ -2,7 +2,7 @@
 
 **A wiggly image gallery script**
 
-Demo: [nclud.github.com/catepilla](nclud.github.com/catepilla)
+Demo: [nclud.github.com/catepilla](http://nclud.github.com/catepilla)
 
 Custom built developed for [nclud.com](http://nclud.com) v3. Probably not that useful for anyone else.
 
