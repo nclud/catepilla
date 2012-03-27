@@ -80,7 +80,7 @@ var cat = new Catepilla( gallery, {
 // reveal segments
 cat.show();
 
-// reveal segments
+// hide segments
 cat.hide();
 
 // stop wigglin' and stop cycle
