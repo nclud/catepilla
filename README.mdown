@@ -16,6 +16,39 @@ cd catepilla
 git submodule update --init
 ```
 
+## Markup
+
+Catepilla should be used on a list of images.
+
+``` html
+<ul id="gallery">
+  <li><img src="img1.jpg" /></li>
+  <li><img src="img2.jpg" /></li>
+  <li><img src="img3.jpg" /></li>
+  ...
+</ul>
+```
+
+## Initialize
+
+``` js
+var gallery = document.getElementById('gallery')
+var cat = new Catepilla( gallery, {
+  // options...
+  // defaults are shown, feel free to overwrite these
+  segmentCount: 5,
+  height: 300,
+  segmentHeight: 0.55,
+  transitionDuration: 0.2,
+  perSegmentDelay: 0.05,
+  wiggleAcceleration: 0.001,
+  maxWiggleSpeed: 0.1,
+  wiggleDelay: 1000,
+  isAutoAdvancing: true,
+  startAngle: Math.PI
+})
+```
+
 ## Modernizr
 
 [Modernizr v2.5+](http://www.modernizr.com/download/#-csstransforms-csstransforms3d-prefixed-teststyles-testprop-testallprops-prefixes-domprefixes) is required with the following options:
@@ -41,25 +74,7 @@ git submodule update --init
 }
 ```
 
-## Options
-
-``` js
-var cat = new Catepilla( elem, {
-  segmentCount: 5,
-  height: 300,
-  segmentHeight: 0.55,
-  transitionDuration: 0.2,
-  perSegmentDelay: 0.05,
-  wiggleAcceleration: 0.001,
-  maxWiggleSpeed: 0.1,
-  wiggleDelay: 1000,
-  isAutoAdvancing: true,
-  startAngle: Math.PI
-})
-```
-
 ## Methods
-
 
 ``` js
 // reveal segments
